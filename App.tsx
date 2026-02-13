@@ -51,7 +51,11 @@ const App: React.FC = () => {
   useEffect(() => {
     const savedReports = localStorage.getItem('ibis_bar_reports');
     if (savedReports) {
-      setReports(JSON.parse(savedReports));
+      try {
+        setReports(JSON.parse(savedReports));
+      } catch (e) {
+        console.error("Erro ao carregar relatórios", e);
+      }
     }
 
     const handleScroll = () => {
@@ -72,7 +76,7 @@ const App: React.FC = () => {
     ];
     const total = allItems.length;
     const completed = allItems.filter(item => checkedItems[item.id]).length;
-    return Math.round((completed / total) * 100);
+    return total === 0 ? 0 : Math.round((completed / total) * 100);
   };
 
   const generatePDF = (report: OperationalReport) => {
@@ -109,13 +113,13 @@ const App: React.FC = () => {
       headStyles: { fillColor: [113, 178, 22] },
     });
 
-    const finalY = (doc as any).lastAutoTable.finalY + 10;
+    const finalY = (doc as any).lastAutoTable?.finalY || 150;
     doc.setFontSize(12);
-    doc.text('Observações:', 14, finalY);
+    doc.text('Observações:', 14, finalY + 10);
     doc.setFontSize(10);
-    doc.text(report.observations || 'Nenhuma observação registrada.', 14, finalY + 7, { maxWidth: 180 });
+    doc.text(report.observations || 'Nenhuma observação registrada.', 14, finalY + 17, { maxWidth: 180 });
 
-    doc.text(`Assinatura Digital: ${report.signature}`, 14, finalY + 30);
+    doc.text(`Assinatura Digital: ${report.signature}`, 14, finalY + 40);
     doc.text(`Desenvolvido por Miqueias Bartender PL`, 14, 285);
 
     doc.save(`checklist_bar_${report.date.replace(/\//g, '-')}_${report.shift}.pdf`);
