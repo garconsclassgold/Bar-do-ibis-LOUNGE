@@ -24,6 +24,10 @@ export interface OperationalReport {
   completedItems: string[];
   totalItems: number;
   coconutCount: number;
+  coconutAvailable: number;
+  freezerObs: string;
+  abastecimentoObs: string;
   observations: string;
   signature: string;
+  isWeeklyWashDay?: boolean;
 }
